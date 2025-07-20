@@ -1,6 +1,6 @@
 #include "flipdot_driver.h"
 #include "flipdot_gfx.h"
-#include "font_5x7.h"
+#include "fonts/font_5x7.h"
 #include <math.h>
 
 static uint8_t framebuffer[NUM_PANELS_VERTICAL][DISPLAY_WIDTH];
