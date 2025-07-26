@@ -6,8 +6,12 @@
 #include "flipdot_gfx.h"
 
 #include "bitmaps/bitmaps_weather.h"
+#include "wifi/wifi_manager.h"
 
 void app_main(void) {
+
+    wifi_connect();
+
     flipdot_init();
 
     const uint16_t* test_bitmaps[] = {weather_clear_day, weather_clear_night, weather_few_clouds_day, weather_few_clouds_night, weather_scattered_clouds, weather_broken_clouds, weather_rain, weather_thunderstorm, weather_snow, weather_mist};
@@ -22,7 +26,7 @@ void app_main(void) {
             flipdot_set_pixel(26,4,true);
             flipdot_set_pixel(25,3,true);
             flipdot_display();
-            vTaskDelay(pdMS_TO_TICKS(3000));
+            vTaskDelay(pdMS_TO_TICKS(10000));
         }
     }
     

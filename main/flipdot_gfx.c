@@ -206,7 +206,6 @@ void flipdot_draw_bitmap(uint8_t x, uint8_t y, const uint16_t *bitmap, bool on) 
     }
 }
 
-
 void flipdot_display(void) {
     flipdot_enable_transmit();
     for (uint8_t panel = 0; panel < NUM_PANELS_VERTICAL; panel++) {
