@@ -1,2 +1,16 @@
-idf_component_register(SRCS "bitmaps/bitmaps_weather.c" "wifi/configuration_webserver.c" "wifi/openweathermap.c" "wifi/wifi_manager.c" "fonts/font_5x7.c" "flipdot_gfx.c" "flipdot_driver.c" "main.c"
-                    INCLUDE_DIRS "." "fonts" "bitmaps" "wifi")
+idf_component_register(SRCS
+                        "bitmaps/bitmaps_weather.c"
+                        "wifi/configuration_webserver.c"
+                        "wifi/openweathermap.c"
+                        "wifi/wifi_manager.c"
+                        "wifi/sntp.c"
+                        "fonts/font_5x7.c"
+                        "flipdot/flipdot_gfx.c"
+                        "flipdot/flipdot_driver.c"
+                        "main.c"
+                    INCLUDE_DIRS
+                        "."
+                        "fonts"
+                        "bitmaps"
+                        "wifi"
+                        "flipdot")

@@ -69,43 +69,45 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
 }
 
 void openweather_api_http(void *pvParameters) {
-    open_weather_config_t *open_weather_config = get_open_weather_config();
+    while(1) {
+        open_weather_config_t *open_weather_config = get_open_weather_config();
 
-    char open_weather_map_url[300];
-    snprintf(open_weather_map_url,
-             sizeof(open_weather_map_url),
-             "%s%s%s%s%s%s",
-             "http://api.openweathermap.org/data/2.5/weather?units=metric&q=",
-             open_weather_config->city,
-             ",",
-             open_weather_config->country_code,
-             "&appid=",
-             open_weather_config->api_key);
+        char open_weather_map_url[300];
+        snprintf(open_weather_map_url,
+                sizeof(open_weather_map_url),
+                "%s%s%s%s%s%s",
+                "http://api.openweathermap.org/data/2.5/weather?units=metric&q=",
+                open_weather_config->city,
+                ",",
+                open_weather_config->country_code,
+                "&appid=",
+                open_weather_config->api_key);
 
-    ESP_LOGI(TAG, "%s",open_weather_map_url);
+        ESP_LOGI(TAG, "%s",open_weather_map_url);
 
-    esp_http_client_config_t config = {
-        .url = open_weather_map_url,
-        .method = HTTP_METHOD_GET,
-        .event_handler = _http_event_handler,
-    };
+        esp_http_client_config_t config = {
+            .url = open_weather_map_url,
+            .method = HTTP_METHOD_GET,
+            .event_handler = _http_event_handler,
+        };
 
-    esp_http_client_handle_t client = esp_http_client_init(&config);
+        esp_http_client_handle_t client = esp_http_client_init(&config);
 
-    esp_err_t err = esp_http_client_perform(client);
+        esp_err_t err = esp_http_client_perform(client);
 
-    if(err == ESP_OK) {
-        int status_code = esp_http_client_get_status_code(client);
-        if(status_code == 200) {
-            ESP_LOGI(TAG, "Message sent Successfully");
+        if(err == ESP_OK) {
+            int status_code = esp_http_client_get_status_code(client);
+            if(status_code == 200) {
+                ESP_LOGI(TAG, "Message sent Successfully");
+            }
+            else {
+                ESP_LOGI(TAG, "Message sent Failed");
+            }
         }
         else {
             ESP_LOGI(TAG, "Message sent Failed");
         }
+        esp_http_client_cleanup(client);
+        vTaskDelay(pdMS_TO_TICKS(600000)); // Make api-request every 10min
     }
-    else {
-        ESP_LOGI(TAG, "Message sent Failed");
-    }
-    esp_http_client_cleanup(client);
-    vTaskDelay(pdMS_TO_TICKS(600000)); // Make api-request every 10min
 }
