@@ -8,11 +8,17 @@
 #include "bitmaps/bitmaps_weather.h"
 #include "wifi/wifi_manager.h"
 
+#include "wifi/openweathermap.h"
+#include "wifi/configuration_weberver.h"
+
 void app_main(void) {
 
-    wifi_connect();
-
     flipdot_init();
+
+    if (wifi_connect()) {
+        start_configuration_webserver();
+		xTaskCreate(&openweather_api_http, "openweather_api_http", 8192, NULL, 6, NULL);
+	}
 
     const uint16_t* test_bitmaps[] = {weather_clear_day, weather_clear_night, weather_few_clouds_day, weather_few_clouds_night, weather_scattered_clouds, weather_broken_clouds, weather_rain, weather_thunderstorm, weather_snow, weather_mist};
     while(1) {
@@ -29,5 +35,4 @@ void app_main(void) {
             vTaskDelay(pdMS_TO_TICKS(10000));
         }
     }
-    
 }
