@@ -229,7 +229,8 @@ esp_err_t wifi_connect(void) {
     if(load_wifi_creds(ssid, pass)) {
         ESP_LOGI(TAG, "Found saved Wi-Fi credentials: SSID=%s", ssid);
 
-        esp_netif_create_default_wifi_sta();
+        esp_netif_t *netif =  esp_netif_create_default_wifi_sta();
+        esp_netif_set_hostname(netif, "flipdot");
         wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
         ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
