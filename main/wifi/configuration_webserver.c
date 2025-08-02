@@ -90,9 +90,9 @@ esp_err_t post_handler(httpd_req_t *req) {
         if(strncmp(token, "api_key=", 8) == 0) {
             api_key = token + 8;
         } else if(strncmp(token, "city=", 5) == 0) {
-            city = token + 9;
+            city = token + 5;
         } else if(strncmp(token, "country_code=", 13) == 0) {
-            country_code = token + 8;
+            country_code = token + 13;
         }
         token = strtok(NULL, "&");
     }
