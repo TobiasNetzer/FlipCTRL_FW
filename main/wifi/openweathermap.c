@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_event.h"
@@ -46,7 +47,8 @@ static esp_err_t get_openweathermap_data(const char *json_string) {
         cJSON *temp = cJSON_GetObjectItem(main, "temp");
         cJSON *humidity = cJSON_GetObjectItem(main, "humidity");
         if(cJSON_IsNumber(temp)) {
-            owm_data.temperature = temp->valueint;
+            float tempf = rintf(temp->valuedouble);
+            owm_data.temperature = (int8_t) tempf;
         }
         if(cJSON_IsNumber(humidity)) {
             owm_data.humidity = humidity->valueint;
