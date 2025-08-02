@@ -23,7 +23,7 @@ An API request is made every 15 minutes to retrieve the current weather conditio
 ## TODO
 
 * Improve webserver - Currently very basic implementation and look
-* Add additionaly screens
+* Add additional screens
 * Add support for local temperature/humidity sensor via expansion port
 
 ## Credit
