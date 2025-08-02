@@ -4,15 +4,17 @@
 #include <stdio.h>
 #include "wifi/openweathermap.h"
 #include "bitmaps/bitmaps_weather.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
-void flipdot_app_time(void) {
+void flipdot_app_time(bool force_update) {
     static int current_hour = 0, current_min = 0;
     time_t now;
     struct tm timeinfo;
     time(&now);
     localtime_r(&now, &timeinfo);
 
-    if(current_hour != timeinfo.tm_hour || current_min != timeinfo.tm_min) {
+    if(current_hour != timeinfo.tm_hour || current_min != timeinfo.tm_min || force_update) {
         current_hour = timeinfo.tm_hour;
         current_min = timeinfo.tm_min;
         char time_buf[29];
@@ -39,10 +41,10 @@ void flipdot_app_time(void) {
     }
 }
 
-void flipdot_app_weather(void) {
+void flipdot_app_weather(bool force_update) {
     owm_data_t *owm_data = get_open_weather_data();
 
-    if(!owm_data->updated) return;
+    if(!owm_data->updated && !force_update) return;
     owm_data->updated = false;
 
     if(owm_data->description_id >= 701 && owm_data->description_id <= 781) owm_data->description_id = 701;
@@ -99,4 +101,17 @@ void flipdot_app_weather(void) {
     }
 
     flipdot_display();
+}
+
+void flipdot_app_selector(void *pvParameters) {
+    while(1) {
+        flipdot_app_t *selected_app = (flipdot_app_t *) pvParameters;
+
+        if (selected_app->app < FLIPDOT_WEATHER) (selected_app->app)++;
+        else selected_app->app = 0;
+
+        selected_app->force_update = true;
+
+        vTaskDelay(pdMS_TO_TICKS(600000));
+    }
 }

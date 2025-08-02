@@ -17,7 +17,8 @@
 
 void app_main(void) {
 
-    flipdot_app_t flipdot_app = FLIPDOT_WEATHER;
+    flipdot_app_t flipdot_app = {.app = FLIPDOT_APP_END,
+                                .force_update = true };
 
     flipdot_init();
 
@@ -25,6 +26,7 @@ void app_main(void) {
         start_configuration_webserver();
         start_sntp_time_sync();
 		xTaskCreate(&openweather_api_http, "openweather_api_http", 8192, NULL, 6, NULL);
+        xTaskCreate(&flipdot_app_selector, "flipdot_app_selector", 8192, &flipdot_app, 5, NULL);
         vTaskDelay(pdMS_TO_TICKS(1000));
 	} else {
         flipdot_draw_line(9, 2, 18,11, WHITE);
@@ -34,33 +36,18 @@ void app_main(void) {
     }
 
     while(1) {
-        switch(flipdot_app) {
+        switch(flipdot_app.app) {
             case FLIPDOT_TIME: {
-                flipdot_app_time();
+                flipdot_app_time(flipdot_app.force_update);
             };
             break;
             case FLIPDOT_WEATHER: {
-                flipdot_app_weather();
+                flipdot_app_weather(flipdot_app.force_update);
             };
             break;
+            default: break;
         }
-
+        flipdot_app.force_update = false;
         vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-
-    const uint16_t* test_bitmaps[] = {weather_clear_day, weather_clear_night, weather_few_clouds_day, weather_few_clouds_night, weather_scattered_clouds, weather_broken_clouds, weather_rain, weather_thunderstorm, weather_snow, weather_mist};
-    while(1) {
-
-        for(uint8_t i = 0; i<10; i++) {
-            flipdot_clear();
-            flipdot_draw_bitmap(0,2,test_bitmaps[i],true);
-            flipdot_draw_text(12,4,"23");
-            flipdot_set_pixel(25,5,true);
-            flipdot_set_pixel(24,4,true);
-            flipdot_set_pixel(26,4,true);
-            flipdot_set_pixel(25,3,true);
-            flipdot_display();
-            vTaskDelay(pdMS_TO_TICKS(10000));
-        }
     }
 }
