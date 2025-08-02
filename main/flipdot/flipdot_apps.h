@@ -12,6 +12,8 @@ typedef enum flipdot_app_e {
 
 void flipdot_app_time(void);
 
+void flipdot_app_weather(void);
+
 #ifdef __cplusplus
 }
 #endif /*__cplusplus */

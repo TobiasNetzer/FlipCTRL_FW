@@ -1,3 +1,4 @@
+#include "openweathermap.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -17,20 +18,21 @@
 #include "bitmaps_weather.h"
 #include "wifi/configuration_webserver.h"
 
-static const char *TAG = "HTTP_CLIENT_OPENWEATHERMAP";
-
 #define HTTP_RESPONSE_BUFFER_SIZE 1024
+
+static const char *TAG = "HTTP_CLIENT_OPENWEATHERMAP";
 
 static char *response_data = NULL;
 static size_t response_len = 0;
 static bool all_chunks_received = false;
 
-esp_err_t get_openweathermap_data(const char *json_string) {
+owm_data_t owm_data = {0};
+
+static esp_err_t get_openweathermap_data(const char *json_string) {
    
     cJSON *root = cJSON_Parse(json_string);
-    cJSON *obj = cJSON_GetObjectItemCaseSensitive(root, "main");
 
-    if(!obj) {
+    if(!root) {
     ESP_LOGW(TAG, "Missing Data");
     cJSON_Delete(root);
     free(response_data);
@@ -39,8 +41,34 @@ esp_err_t get_openweathermap_data(const char *json_string) {
     return ESP_FAIL;
     }
 
-    float temp = cJSON_GetObjectItemCaseSensitive(obj, "temp")->valuedouble;
-    int humidity = cJSON_GetObjectItemCaseSensitive(obj, "humidity")->valueint;
+    cJSON *main = cJSON_GetObjectItem(root, "main");
+    if(main) {
+        cJSON *temp = cJSON_GetObjectItem(main, "temp");
+        cJSON *humidity = cJSON_GetObjectItem(main, "humidity");
+        if(cJSON_IsNumber(temp)) {
+            owm_data.temperature = temp->valueint;
+        }
+        if(cJSON_IsNumber(humidity)) {
+            owm_data.humidity = humidity->valueint;
+        }
+    }
+
+    cJSON *weather = cJSON_GetObjectItem(root, "weather");
+    if(weather && cJSON_IsArray(weather)) {
+        cJSON *weather_item = cJSON_GetArrayItem(weather, 0);
+        if(weather_item) {
+            cJSON *id = cJSON_GetObjectItem(weather_item, "id");
+            cJSON *icon = cJSON_GetObjectItem(weather_item, "icon");
+            if(cJSON_IsNumber(id)) {
+                owm_data.description_id = id->valueint;
+            }
+            if(cJSON_IsString(icon)) {
+                size_t len = strlen(icon->valuestring);
+                owm_data.icon_type = icon->valuestring[len - 1];
+            }
+        }
+    }
+    owm_data.updated = true;
     
     cJSON_Delete(root);
     free(response_data);
@@ -122,4 +150,8 @@ void openweather_api_http(void *pvParameters) {
         free(open_weather_map_url);
         vTaskDelay(pdMS_TO_TICKS(600000)); // Make api-request every 10min
     }
+}
+
+owm_data_t *get_open_weather_data(void) {
+    return &owm_data;
 }

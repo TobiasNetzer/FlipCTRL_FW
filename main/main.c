@@ -17,7 +17,7 @@
 
 void app_main(void) {
 
-    flipdot_app_t flipdot_app = FLIPDOT_TIME;
+    flipdot_app_t flipdot_app = FLIPDOT_WEATHER;
 
     flipdot_init();
 
@@ -25,6 +25,7 @@ void app_main(void) {
         start_configuration_webserver();
         start_sntp_time_sync();
 		xTaskCreate(&openweather_api_http, "openweather_api_http", 8192, NULL, 6, NULL);
+        vTaskDelay(pdMS_TO_TICKS(1000));
 	} else {
         flipdot_draw_line(9, 2, 18,11, WHITE);
         flipdot_draw_line(9, 11, 18,2, WHITE);
@@ -39,7 +40,7 @@ void app_main(void) {
             };
             break;
             case FLIPDOT_WEATHER: {
-                flipdot_app_time();
+                flipdot_app_weather();
             };
             break;
         }

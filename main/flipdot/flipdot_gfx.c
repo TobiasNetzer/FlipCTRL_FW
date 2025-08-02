@@ -156,7 +156,7 @@ void flipdot_draw_char(uint8_t x, uint8_t y, char c) {
 }
 
 void flipdot_draw_text(uint8_t x, uint8_t y, const char *text) {
-    while (*text && x + FONT_WIDTH <= DISPLAY_WIDTH) {
+    while (*text && x <= DISPLAY_WIDTH) {
         uint8_t c = *text++;
         flipdot_draw_char(x, y, c);
         x += flipdot_get_char_width(font5x7[c - FONT_CHAR_MIN]) + 1;  // 1 pixel spacing between chars
@@ -164,7 +164,7 @@ void flipdot_draw_text(uint8_t x, uint8_t y, const char *text) {
 }
 
 void flipdot_draw_text_fixed_width(uint8_t x, uint8_t y, const char *text) {
-    while (*text && x + FONT_WIDTH <= DISPLAY_WIDTH) {
+    while (*text && x <= DISPLAY_WIDTH) {
         uint8_t c = *text++;
         flipdot_draw_char(x, y, c);
         x += 5 + 1;  // 1 pixel spacing between chars
