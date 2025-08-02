@@ -7,6 +7,7 @@ idf_component_register(SRCS
                         "fonts/font_5x7.c"
                         "flipdot/flipdot_gfx.c"
                         "flipdot/flipdot_driver.c"
+                        "flipdot/flipdot_apps.c"
                         "main.c"
                     INCLUDE_DIRS
                         "."

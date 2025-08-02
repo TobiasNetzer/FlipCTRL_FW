@@ -15,15 +15,15 @@
 
 #include "flipdot_gfx.h"
 #include "bitmaps_weather.h"
-#include "wifi/configuration_weberver.h"
+#include "wifi/configuration_webserver.h"
 
 static const char *TAG = "HTTP_CLIENT_OPENWEATHERMAP";
 
 #define HTTP_RESPONSE_BUFFER_SIZE 1024
 
-char *response_data = NULL;
-size_t response_len = 0;
-bool all_chunks_received = false;
+static char *response_data = NULL;
+static size_t response_len = 0;
+static bool all_chunks_received = false;
 
 esp_err_t get_openweathermap_data(const char *json_string) {
    
@@ -33,6 +33,9 @@ esp_err_t get_openweathermap_data(const char *json_string) {
     if(!obj) {
     ESP_LOGW(TAG, "Missing Data");
     cJSON_Delete(root);
+    free(response_data);
+    response_data = NULL;
+    response_len = 0;
     return ESP_FAIL;
     }
 
@@ -41,6 +44,8 @@ esp_err_t get_openweathermap_data(const char *json_string) {
     
     cJSON_Delete(root);
     free(response_data);
+    response_data = NULL;
+    response_len = 0;
     return ESP_OK;
 }
 
@@ -72,9 +77,15 @@ void openweather_api_http(void *pvParameters) {
     while(1) {
         open_weather_config_t *open_weather_config = get_open_weather_config();
 
-        char open_weather_map_url[300];
+        size_t url_size = strlen("http://api.openweathermap.org/data/2.5/weather?units=metric&q=") +
+                          strlen(open_weather_config->city) +
+                          strlen(open_weather_config->country_code) +
+                          strlen(open_weather_config->api_key) +
+                          strlen(",&appid=") + 1;
+
+        char *open_weather_map_url = malloc(url_size);
         snprintf(open_weather_map_url,
-                sizeof(open_weather_map_url),
+                url_size,
                 "%s%s%s%s%s%s",
                 "http://api.openweathermap.org/data/2.5/weather?units=metric&q=",
                 open_weather_config->city,
@@ -108,6 +119,7 @@ void openweather_api_http(void *pvParameters) {
             ESP_LOGI(TAG, "Message sent Failed");
         }
         esp_http_client_cleanup(client);
+        free(open_weather_map_url);
         vTaskDelay(pdMS_TO_TICKS(600000)); // Make api-request every 10min
     }
 }
