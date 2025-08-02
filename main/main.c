@@ -1,16 +1,12 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include <time.h>
-#include "esp_log.h"
 
 #include "flipdot/flipdot_driver.h"
 #include "flipdot/flipdot_gfx.h"
 #include "flipdot/flipdot_apps.h"
 
-#include "bitmaps/bitmaps_weather.h"
 #include "wifi/wifi_manager.h"
-
 #include "wifi/openweathermap.h"
 #include "wifi/configuration_webserver.h"
 #include "wifi/sntp.h"
@@ -25,10 +21,10 @@ void app_main(void) {
     if(wifi_connect() == ESP_OK) {
         start_configuration_webserver();
         start_sntp_time_sync();
-		xTaskCreate(&openweather_api_http, "openweather_api_http", 8192, NULL, 6, NULL);
+        xTaskCreate(&openweather_api_http, "openweather_api_http", 8192, NULL, 6, NULL);
         xTaskCreate(&flipdot_app_selector, "flipdot_app_selector", 8192, &flipdot_app, 5, NULL);
         vTaskDelay(pdMS_TO_TICKS(1000));
-	} else {
+    } else {
         flipdot_draw_line(9, 2, 18,11, WHITE);
         flipdot_draw_line(9, 11, 18,2, WHITE);
         flipdot_display();
