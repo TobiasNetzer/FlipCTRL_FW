@@ -32,7 +32,9 @@ void flipdot_app_time(bool force_update) {
 
         flipdot_draw_text(1 + (ones * 2), 3, time_buf);
 
-        for(uint8_t i = 0; i < timeinfo.tm_wday * 4; i = i + 4) {
+        int weekday_iso = timeinfo.tm_wday == 0 ? 7 : timeinfo.tm_wday;
+
+        for(uint8_t i = 0; i < weekday_iso * 4; i = i + 4) {
             flipdot_set_pixel(1 + i, 13, WHITE);
             flipdot_set_pixel(2 + i, 13, WHITE);
         }
@@ -58,7 +60,7 @@ void flipdot_app_weather(bool force_update) {
     sprintf(temp_buf, "%d*", owm_data->temperature);
 
     flipdot_draw_text(12, 3, temp_buf);
-    flipdot_draw_line(0, 13, (owm_data->humidity * 28) / 100, 13, WHITE);
+    flipdot_draw_line(0, 13, (owm_data->humidity * 27) / 100, 13, WHITE);
 
     switch(owm_data->description_id) {
         case 200: {
@@ -107,7 +109,7 @@ void flipdot_app_selector(void *pvParameters) {
     while(1) {
         flipdot_app_t *selected_app = (flipdot_app_t *) pvParameters;
 
-        if (selected_app->app < FLIPDOT_WEATHER) (selected_app->app)++;
+        if (selected_app->app < FLIPDOT_APP_END - 1) (selected_app->app)++;
         else selected_app->app = 0;
 
         selected_app->force_update = true;

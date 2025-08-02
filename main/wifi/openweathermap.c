@@ -150,7 +150,7 @@ void openweather_api_http(void *pvParameters) {
         }
         esp_http_client_cleanup(client);
         free(open_weather_map_url);
-        vTaskDelay(pdMS_TO_TICKS(600000)); // Make api-request every 10min
+        vTaskDelay(pdMS_TO_TICKS(900000)); // Make api-request every 15min
     }
 }
 
