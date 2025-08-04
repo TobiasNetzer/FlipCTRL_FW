@@ -18,7 +18,7 @@ Time is automatically synchronized once per hour with the NTP server. The bottom
 ### Weather Screen
 ![Image](docs/flipdot_weather_app.png)
 
-An API request is made every 15 minutes to retrieve the current weather conditions from OpenWeatherMap. The display shows a weather icon alongside the current temperature. Humidity is additionally represented by a horizontal bar at the bottom of the matrix display.
+An API request is made every 15 minutes to retrieve the current weather conditions from OpenWeatherMap. The display shows one of ten weather icons alongside the current temperature. Humidity is additionally represented by a horizontal bar at the bottom of the matrix display.
 
 ## TODO
 
